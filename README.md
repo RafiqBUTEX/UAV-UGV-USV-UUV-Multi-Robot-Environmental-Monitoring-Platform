@@ -9,7 +9,7 @@ The project focuses on developing a unified multi-robot architecture in which ae
 This project started as a hybrid **surface/underwater autonomous vehicle (USV/UUV)** simulation and is evolving toward a broader multi-robot environmental monitoring platform.
 
 ## System Architecture
-![System architecture](architecture_diagram.png)
+![System architecture](architecture.png)
 
 The long-term system combines:
 
