@@ -11,75 +11,77 @@ The project explores coordinated autonomous operation of aerial, ground, surface
 - 🚤 **USV** — surface navigation and environmental monitoring
 - 🌊 **UUV** — underwater sensing, mapping, and ecological monitoring
 
-
 ![Architecture](architecture.png)
 
-
-It is built entirely in simulation on Gazebo Harmonic + ArduPilot SITL + ROS2 Humble, with a development path toward real hardware.
+The system is being developed in simulation first, with a future path toward real-world robotic platforms.
 
 ## Tech Stack
 
-- **Simulation:** Gazebo Harmonic (gz-sim 8), ArduPilot official Gazebo plugin (JSON FDM bridge)
-- **Autopilot:** ArduPilot SITL (Copter / Rover / Rover-Skid / ArduSub frames)
-- **Middleware:** ROS2 Humble, MAVROS
-- **Navigation:** Nav2, `robot_localization` (EKF for GPS-denied underwater navigation)
-- **Perception:** YOLOv8, OpenCV, vision SLAM (RTAB-Map / ORB-SLAM3) for underwater mapping
-- **Reference vehicle model:** ArduPilot's official BlueBoat (SITL_Models) for the USV
+- **Simulation:** Gazebo Harmonic (gz-sim 8), ArduPilot Gazebo plugin, SDF
+- **Autopilot:** ArduPilot SITL (Copter / Rover / Rover-Skid / ArduSub)
+- **Middleware:** ROS 2 Humble, MAVROS, MAVLink
+- **Navigation:** Nav2, `robot_localization`
+- **Perception:** YOLOv8, OpenCV
+- **Mapping & SLAM:** RTAB-Map / ORB-SLAM3
+- **Reference USV:** ArduPilot BlueBoat
 
-## Status — What's Done So Far
+## Current Status
 
-- ROS2 workspace (`suv_ws`) with four packages: bringup, description, perception, navigation
-- ArduPilot Rover SITL built from source and verified running standalone
-- Migrated from Gazebo Classic to Gazebo Harmonic after confirming the official ArduPilot Gazebo plugin no longer supports Classic; rebuilt the full toolchain and dependency set for Harmonic
-- Fixed VM-specific rendering issues (forced software rendering to resolve a black-viewport bug under VirtualBox)
-- **Validated the full simulation pipeline end-to-end** using ArduPilot's reference quad-copter model: SITL connected to Gazebo Harmonic, armed, took off, and flew under real physics — confirming the toolchain itself is sound
-- Built a custom water world and a first-pass boat hull model; debugged real SDF/joint-scoping issues to get a custom vehicle talking to SITL
-- Switched to ArduPilot's official BlueBoat reference model for realistic thrusters; currently resolving a Gazebo Harmonic physics-engine limitation (mesh collision shapes aren't supported by the default `dartsim` engine) that's preventing the boat from floating/moving correctly
+- ROS 2 workspace (`suv_ws`) with four packages: bringup, description, navigation, and perception
+- ArduPilot Rover SITL built from source and verified
+- Gazebo Harmonic simulation environment established
+- Migrated the development pipeline from Gazebo Classic to Gazebo Harmonic
+- Resolved VirtualBox-specific rendering issues
+- Validated the ArduPilot SITL ↔ Gazebo Harmonic pipeline using an ArduPilot reference vehicle
+- Developed a custom water world
+- Developed and tested an initial custom boat hull
+- Debugged SDF, joint-scoping, plugin, and physics-related issues
+- Integrated ArduPilot's BlueBoat reference model for continued USV development
+- Currently working on reliable USV buoyancy and propulsion in Gazebo Harmonic
 
 ## Roadmap
 
-**Phase 1 — Surface-only autonomy (in progress)**
-Water world + BlueBoat USV with working buoyancy/thrust, Nav2 GPS waypoint navigation, YOLOv8-based obstacle/buoy detection feeding a live costmap.
+### Phase 1 — Surface Autonomy
+Water world + BlueBoat USV, buoyancy/thrust, GPS waypoint navigation, obstacle and buoy detection.
 
-**Phase 2 — Dive/resurface mechanics**
-Depth/pitch control for a submersible vehicle, scripted dive → hold depth → resurface sequence.
+### Phase 2 — Dive & Resurface
+Depth and pitch control with autonomous dive → hold → resurface behavior.
 
-**Phase 3 — Underwater localization**
-GPS-denied dead-reckoning navigation using simulated DVL + IMU fused through an EKF.
+### Phase 3 — Underwater Localization
+GPS-denied navigation using simulated DVL + IMU with EKF sensor fusion.
 
-**Phase 4 — Underwater perception & mapping**
-Simulated sonar and/or short-range vision, SLAM-based mapping, target/object search underwater.
+### Phase 4 — Underwater Perception & Mapping
+Simulated sonar and/or vision, SLAM, and underwater object detection.
 
-**Phase 5 — Full single-vehicle mission integration**
-State-machine-driven autonomous mission chaining surface transit → dive → underwater task → resurface → return.
+### Phase 5 — Autonomous Mission
+Surface transit → dive → underwater task → resurface → return.
 
-**Phase 6 — RL-based control (stretch goal)**
-Reinforcement-learned depth-hold / station-keeping controller trained against simulated current/wave disturbance, benchmarked against a PID baseline.
+### Phase 6 — Reinforcement Learning
+RL-based depth-hold and station-keeping under simulated current and wave disturbances.
 
-**Phase 7+ — Multi-robot expansion (future work)**
-- Extend beyond a single hybrid vehicle to a coordinated **UAV + UGV + USV + UUV** fleet
-- Multi-vehicle SITL orchestration (parallel instances, ROS2 namespacing per vehicle)
-- Shared mission coordination layer (state machine / behavior tree) for task allocation across vehicle types
-- UAV for aerial survey and communication relay; UGV for shore-based logistics; USV as a surface communication bridge to the UUV; UUV for underwater ecological sensing
-- Ecology-specific perception: species/coral detection models, water-quality sensing, environmental change tracking over time
+### Phase 7 — Multi-Robot Expansion
+Coordinated **UAV + UGV + USV + UUV** operation with multi-vehicle SITL, ROS 2 namespaces, mission coordination, and task allocation.
 
 ## Development Environment
 
-- Ubuntu 22.04 LTS (Oracle VirtualBox)
-- ROS2 Humble
-- Gazebo Harmonic (gz-sim 8) — note: Gazebo Classic 11 can coexist on the same machine; they use separate binaries, plugin systems, and environment variables (`GAZEBO_*` vs `GZ_SIM_*`), so both can be installed side by side without conflict
-- ArduPilot SITL built from source
+- Ubuntu 22.04 LTS
+- ROS 2 Humble
+- Gazebo Harmonic
+- ArduPilot SITL
+- Oracle VirtualBox
 
 ## Getting Started
 
 ```bash
+# Source ROS 2
+source /opt/ros/humble/setup.bash
+
 # Source the workspace
 source ~/suv_ws/install/setup.bash
 
-# Launch the water world in Gazebo Harmonic
+# Launch the water world
 gz sim -v4 -r ~/suv_ws/src/suv_bringup/worlds/water_world.world
 
-# In a separate terminal, launch Rover SITL connected to Gazebo
+# In a separate terminal, start ArduPilot Rover SITL
 cd ~/ardupilot/Rover
 sim_vehicle.py -v Rover -f rover-skid --model JSON --console --map
-```
