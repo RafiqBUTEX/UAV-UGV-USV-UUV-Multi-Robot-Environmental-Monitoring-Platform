@@ -2,11 +2,18 @@
 
 A simulation-first multi-robot robotics platform integrating **UAV, UGV, USV, and UUV** systems for autonomous environmental and underwater ecology monitoring.
 
-![Architecture](architecture.png)
-
 ## Overview
 
-This project began as a hybrid surface/underwater autonomous vehicle (USV/UUV) and has grown into a broader multi-robot platform: a fleet of aerial, ground, surface, and underwater vehicles working together for environmental and ecological monitoring — aerial survey and relay (UAV), shore operations (UGV), surface transit and communication bridging (USV), and underwater sensing (UUV).
+The project explores coordinated autonomous operation of aerial, ground, surface, and underwater vehicles using **ROS 2, Gazebo Harmonic, and ArduPilot SITL**.
+
+- 🛩️ **UAV** — aerial survey and communication relay
+- 🚙 **UGV** — shore-based operations and support
+- 🚤 **USV** — surface navigation and environmental monitoring
+- 🌊 **UUV** — underwater sensing, mapping, and ecological monitoring
+
+
+![Architecture](architecture.png)
+
 
 It is built entirely in simulation on Gazebo Harmonic + ArduPilot SITL + ROS2 Humble, with a development path toward real hardware.
 
