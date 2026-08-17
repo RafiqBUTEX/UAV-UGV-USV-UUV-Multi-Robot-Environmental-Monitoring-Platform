@@ -76,6 +76,3 @@ gz sim -v4 -r ~/suv_ws/src/suv_bringup/worlds/water_world.world
 cd ~/ardupilot/Rover
 sim_vehicle.py -v Rover -f rover-skid --model JSON --console --map
 ```
-
-## License
-
